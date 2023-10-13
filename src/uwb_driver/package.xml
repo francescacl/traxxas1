@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>uwb_driver</name>
+  <version>0.1.0</version>
+  <description>Driver for DWM1001 UWB device.</description>
+  
+  <maintainer email="isl.torvergata@gmail.com">Intelligent Systems Lab</maintainer>  
+  <license>GNU GPL v3.0</license>
+  
+  <depend>ament_index_python</depend>
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+  <depend>rclpy</depend>
+  <depend>ros2launch</depend>
+  <depend>rover_interfaces</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+  
+</package>
