@@ -26,7 +26,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'port',
-            default_value='/dev/ttyACM0',
+            default_value='/dev/uwb1',
             description='Serial port to connect to'),
         DeclareLaunchArgument(
             'id',

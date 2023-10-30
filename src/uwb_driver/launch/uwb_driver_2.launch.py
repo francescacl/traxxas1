@@ -14,12 +14,9 @@ from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 
 import sys
-params_holder_path = '/home/neo/workspace/src/params_holder'
-sys.path.insert(1, params_holder_path)
-import update_yaml
-update_yaml.update_params()
+params_holder_path = '/home/neo/workspace/src/uwb_driver'
 
-config = os.path.join(params_holder_path, 'config/params_holder.yaml')
+config = os.path.join(params_holder_path, 'config/uwb_driver.yaml')
 
 def generate_launch_description():
     """Builds a LaunchDescription for the ParamsManager"""
