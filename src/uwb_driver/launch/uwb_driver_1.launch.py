@@ -37,7 +37,7 @@ def generate_launch_description():
         Node(
             package='uwb_driver',
             executable='uwb_driver',
-            exec_name='uwb_driver',
+            exec_name='uwb_driver_1',
             shell=True,
             emulate_tty=True,
             output='both',

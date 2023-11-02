@@ -25,7 +25,6 @@ from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 
 from traxxas1_interfaces.msg import Uwb, UwbArray
-from geometry_msgs.msg import PoseStamped
 
 class DWM1001_API_COMMANDS:
     LEC          = b'lec\n'     # Show measurement and position in CSV format
@@ -40,17 +39,22 @@ class UWBDriver(Node):
         super().__init__('uwb_driver')
 
         # Initialize parameters
-        self.declare_parameter('port', '/dev/ttyACM0')
-        self.dwm_port = self.get_parameter('port').value
-        self.declare_parameter('id', 0)
-        self.id = int(self.get_parameter('id').value)
+        self.declare_parameters(
+            namespace='',
+            parameters=[('port', 'port'),
+                        ('id', 0),
+                        ('topic', 'topic'),
+                       ])
 
-        # Serial port settings
+        self.dwm_port = self.get_parameter('port').value
+        self.id = self.get_parameter('id').value
+        self.topic = self.get_parameter('topic').value
+
         self.get_logger().info(f'port: {self.dwm_port}')
         self.get_logger().info(f'id: {self.id}')
+        self.get_logger().info(f'topic: {self.topic}')
 
-        self.uwb_pub = self.create_publisher(UwbArray, f'/tag{self.id}/uwb_distances', 0)
-        self.uwb_pub_rviz = self.create_publisher(PoseStamped, f'/tag{self.id}/rviz/uwb_pose', 0)
+        self.uwb_pub = self.create_publisher(UwbArray, f'{self.topic}', 0)
 
         try:
             self.serialPortDWM1001 = serial.Serial(
@@ -122,15 +126,6 @@ class UWBDriver(Node):
                     msg_array.y_est = float(splits[i+1])
                     msg_array.z_est = float(splits[i+2])
                     msg_array.quality_factor = int(float(splits[i+3]))
-
-                    msg_pose = PoseStamped()
-                    msg_pose.header.stamp = self.get_clock().now().to_msg()
-                    msg_pose.header.frame_id = f'uwb{self.id}_link'
-                    msg_pose.pose.position.x = msg_array.x_est
-                    msg_pose.pose.position.y = msg_array.y_est
-                    msg_pose.pose.position.z = msg_array.z_est
-
-                    self.uwb_pub_rviz.publish(msg_pose)
 
                 self.uwb_pub.publish(msg_array)
 
