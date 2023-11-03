@@ -4,8 +4,7 @@
 std_msgs/Header header
 
 # GPS data: acquisition_date, latitude, longitude, gps_precision
-# TODO: uncomment the following line when gps_data is not empty
-# sensor_msgs/NavSatFix gps_data
+sensor_msgs/NavSatFix gps_data
 
 # Air quality data
 int8 device_id

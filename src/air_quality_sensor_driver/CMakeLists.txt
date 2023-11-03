@@ -25,6 +25,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(traxxas1_interfaces REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 
 # Publisher
@@ -37,7 +38,8 @@ ament_target_dependencies(
   pub
   rclcpp
   traxxas1_interfaces
-  sensor_msgs)
+  sensor_msgs
+  std_msgs)
 
   
 # Mette dentro install gli eseguibili che si va a generare

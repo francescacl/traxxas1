@@ -89,7 +89,14 @@
     "variant": "cpp",
     "*.idl": "cpp",
     "*.cpp": "cpp",
-    "*.hpp": "cpp"
+    "*.hpp": "cpp",
+    "compare": "cpp",
+    "concepts": "cpp",
+    "coroutine": "cpp",
+    "source_location": "cpp",
+    "numbers": "cpp",
+    "semaphore": "cpp",
+    "stop_token": "cpp"
   },
   // Use Pylance as language server
   "python.languageServer": "Pylance",
