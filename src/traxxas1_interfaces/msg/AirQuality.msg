@@ -3,11 +3,14 @@
 # ROS 2 message header (with timestamp from ROS 2 real-time clock)
 std_msgs/Header header
 
-# GPS data: acquisition_date, latitude, longitude, gps_precision
+int8 device_id
+string acquisition_date
+
+# GPS data: latitude, longitude
 sensor_msgs/NavSatFix gps_data
+int8 gps_precision
 
 # Air quality data
-int8 device_id
 float32 pm25
 float32 pm10
 float32 humidity

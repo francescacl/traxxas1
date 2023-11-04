@@ -53,8 +53,6 @@ void Pub::pub_timer_callback(void)
 
     // Read from serial port
     
-    RCLCPP_INFO(get_logger(), "New data acquisition");
-
     asio::io_context io;
     asio::serial_port port(io, "/dev/ttyACM0"); // TODO: add udev rule
 
@@ -82,21 +80,23 @@ void Pub::pub_timer_callback(void)
       latitude = std::stof(str_vector[2]);
       longitude = std::stof(str_vector[3]);
       gps_precision= std::stoi(str_vector[4]);
-      pm25 = std::stof(str_vector[1]);
-      pm10 = std::stof(str_vector[2]);
-      humidity = std::stof(str_vector[3]);
-      temperature = std::stof(str_vector[4]);
-      no2 = std::stof(str_vector[5]);
-      co2 = std::stof(str_vector[6]);
-      nh3 = std::stof(str_vector[7]);
-      co = std::stof(str_vector[8]);
+      pm25 = std::stof(str_vector[5]);
+      pm10 = std::stof(str_vector[6]);
+      humidity = std::stof(str_vector[7]);
+      temperature = std::stof(str_vector[8]);
+      no2 = std::stof(str_vector[9]);
+      co2 = std::stof(str_vector[10]);
+      nh3 = std::stof(str_vector[11]);
+      co = std::stof(str_vector[12]);
 
-      std::cout << "device_id: " << device_id << std::endl;
+      std::cout << std::endl;
+      RCLCPP_INFO(get_logger(), "New data acquisition");
+      std::cout << "\ndevice_id: " << device_id << std::endl;
       std::cout << "acquisition_date: " << acquisition_date << std::endl;
-      std::cout << "latitude: " << latitude << std::endl;
+      std::cout << "\nlatitude: " << latitude << std::endl;
       std::cout << "longitude: " << longitude << std::endl;
       std::cout << "gps_precision: " << gps_precision << std::endl;
-      std::cout << "pm25: " << pm25 << std::endl;
+      std::cout << "\npm25: " << pm25 << std::endl;
       std::cout << "pm10: " << pm10 << std::endl;
       std::cout << "humidity: " << humidity << std::endl;
       std::cout << "temperature: " << temperature << std::endl;
@@ -108,13 +108,15 @@ void Pub::pub_timer_callback(void)
       // Messages
 
       sensor_msgs::msg::NavSatFix new_msg_gps{};
-      // TODO: set new_msg_gps's information using the following syntax
+      // TODO: set new_msg_gps's information about latitude and longitude using the following syntax
       // new_msg_gps.set__data(new_data_gps);
       // gps_pub_->publish(new_msg_gps); // TODO: uncomment this line when new_msg_gps is not empty
 
       traxxas1_interfaces::msg::AirQuality new_msg_air{};
-      new_msg_air.set__gps_data(new_msg_gps);
       new_msg_air.set__device_id(device_id);
+      new_msg_air.set__acquisition_date(acquisition_date);
+      new_msg_air.set__gps_data(new_msg_gps);
+      new_msg_air.set__gps_precision(gps_precision);
       new_msg_air.set__pm25(pm25);
       new_msg_air.set__pm10(pm10);
       new_msg_air.set__humidity(humidity);
@@ -126,6 +128,7 @@ void Pub::pub_timer_callback(void)
       air_quality_pub_->publish(new_msg_air);
 
       pub_cnt_++;
+      std::cout << std::endl;
       RCLCPP_INFO(this->get_logger(), "Published message %lu", pub_cnt_);
 
     }
@@ -146,7 +149,7 @@ int main(int argc, char ** argv)
   rclcpp::spin(pub_node);
 
   rclcpp::shutdown();
-  std::cout << "Publisher terminated" << std::endl;
+  std::cout << "\nPublisher terminated" << std::endl;
   exit(EXIT_SUCCESS);
 
 }
