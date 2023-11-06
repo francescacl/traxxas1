@@ -41,7 +41,7 @@ void Pub::pub_timer_callback(void)
     std::string acquisition_date;
     float latitude;
     float longitude;
-    float altitude
+    float altitude;
     int gps_precision;
     float pm25;
     float pm10;
@@ -52,10 +52,8 @@ void Pub::pub_timer_callback(void)
     float nh3;
     float co;
 
-    // Read from serial port  TODO AGGIUNGERE ALTITUDE
+    // Read from serial port
     
-    RCLCPP_INFO(get_logger(), "New data acquisition");
-
     asio::io_context io;
     asio::serial_port port(io, "/dev/ttyACM0"); // TODO: add udev rule
 
@@ -93,13 +91,15 @@ void Pub::pub_timer_callback(void)
       nh3 = std::stof(str_vector[12]);
       co = std::stof(str_vector[13]);
 
-      std::cout << "device_id: " << device_id << std::endl;
+      std::cout << std::endl;
+      RCLCPP_INFO(get_logger(), "New data acquisition");
+      std::cout << "\ndevice_id: " << device_id << std::endl;
       std::cout << "acquisition_date: " << acquisition_date << std::endl;
-      std::cout << "latitude: " << latitude << std::endl;
+      std::cout << "\nlatitude: " << latitude << std::endl;
       std::cout << "longitude: " << longitude << std::endl;
       std::cout << "altitude: " << altitude << std::endl;
       std::cout << "gps_precision: " << gps_precision << std::endl;
-      std::cout << "pm25: " << pm25 << std::endl;
+      std::cout << "\npm25: " << pm25 << std::endl;
       std::cout << "pm10: " << pm10 << std::endl;
       std::cout << "humidity: " << humidity << std::endl;
       std::cout << "temperature: " << temperature << std::endl;
@@ -117,8 +117,10 @@ void Pub::pub_timer_callback(void)
       gps_pub_->publish(new_msg_gps);
 
       traxxas1_interfaces::msg::AirQuality new_msg_air{};
-      new_msg_air.set__gps_data(new_msg_gps);
       new_msg_air.set__device_id(device_id);
+      new_msg_air.set__acquisition_date(acquisition_date);
+      new_msg_air.set__gps_data(new_msg_gps);
+      new_msg_air.set__gps_precision(gps_precision);
       new_msg_air.set__pm25(pm25);
       new_msg_air.set__pm10(pm10);
       new_msg_air.set__humidity(humidity);
@@ -130,6 +132,7 @@ void Pub::pub_timer_callback(void)
       air_quality_pub_->publish(new_msg_air);
 
       pub_cnt_++;
+      std::cout << std::endl;
       RCLCPP_INFO(this->get_logger(), "Published message %lu", pub_cnt_);
 
     }
@@ -150,7 +153,7 @@ int main(int argc, char ** argv)
   rclcpp::spin(pub_node);
 
   rclcpp::shutdown();
-  std::cout << "Publisher terminated" << std::endl;
+  std::cout << "\nPublisher terminated" << std::endl;
   exit(EXIT_SUCCESS);
 
 }
