@@ -41,6 +41,7 @@ void Pub::pub_timer_callback(void)
     std::string acquisition_date;
     float latitude;
     float longitude;
+    float altitude
     int gps_precision;
     float pm25;
     float pm10;
@@ -51,8 +52,10 @@ void Pub::pub_timer_callback(void)
     float nh3;
     float co;
 
-    // Read from serial port
+    // Read from serial port  TODO AGGIUNGERE ALTITUDE
     
+    RCLCPP_INFO(get_logger(), "New data acquisition");
+
     asio::io_context io;
     asio::serial_port port(io, "/dev/ttyACM0"); // TODO: add udev rule
 
@@ -72,31 +75,31 @@ void Pub::pub_timer_callback(void)
       str_vector.push_back(token);
     }
     
-    if(str_vector.size() == 13) {
+    if(str_vector.size() == 14) {
 
       // Save the acquired values into the appropriate variables
       device_id = std::stoi(str_vector[0]);
       acquisition_date = str_vector[1];
       latitude = std::stof(str_vector[2]);
       longitude = std::stof(str_vector[3]);
-      gps_precision= std::stoi(str_vector[4]);
-      pm25 = std::stof(str_vector[5]);
-      pm10 = std::stof(str_vector[6]);
-      humidity = std::stof(str_vector[7]);
-      temperature = std::stof(str_vector[8]);
-      no2 = std::stof(str_vector[9]);
-      co2 = std::stof(str_vector[10]);
-      nh3 = std::stof(str_vector[11]);
-      co = std::stof(str_vector[12]);
+      altitude = std::stof(str_vector[4]);
+      gps_precision= std::stoi(str_vector[5]);
+      pm25 = std::stof(str_vector[6]);
+      pm10 = std::stof(str_vector[7]);
+      humidity = std::stof(str_vector[8]);
+      temperature = std::stof(str_vector[9]);
+      no2 = std::stof(str_vector[10]);
+      co2 = std::stof(str_vector[11]);
+      nh3 = std::stof(str_vector[12]);
+      co = std::stof(str_vector[13]);
 
-      std::cout << std::endl;
-      RCLCPP_INFO(get_logger(), "New data acquisition");
-      std::cout << "\ndevice_id: " << device_id << std::endl;
+      std::cout << "device_id: " << device_id << std::endl;
       std::cout << "acquisition_date: " << acquisition_date << std::endl;
-      std::cout << "\nlatitude: " << latitude << std::endl;
+      std::cout << "latitude: " << latitude << std::endl;
       std::cout << "longitude: " << longitude << std::endl;
+      std::cout << "altitude: " << altitude << std::endl;
       std::cout << "gps_precision: " << gps_precision << std::endl;
-      std::cout << "\npm25: " << pm25 << std::endl;
+      std::cout << "pm25: " << pm25 << std::endl;
       std::cout << "pm10: " << pm10 << std::endl;
       std::cout << "humidity: " << humidity << std::endl;
       std::cout << "temperature: " << temperature << std::endl;
@@ -108,15 +111,14 @@ void Pub::pub_timer_callback(void)
       // Messages
 
       sensor_msgs::msg::NavSatFix new_msg_gps{};
-      // TODO: set new_msg_gps's information about latitude and longitude using the following syntax
-      // new_msg_gps.set__data(new_data_gps);
-      // gps_pub_->publish(new_msg_gps); // TODO: uncomment this line when new_msg_gps is not empty
+      new_msg_gps.set__longitude(longitude);
+      new_msg_gps.set__latitude(latitude);
+      new_msg_gps.set__altitude(altitude);
+      gps_pub_->publish(new_msg_gps);
 
       traxxas1_interfaces::msg::AirQuality new_msg_air{};
-      new_msg_air.set__device_id(device_id);
-      new_msg_air.set__acquisition_date(acquisition_date);
       new_msg_air.set__gps_data(new_msg_gps);
-      new_msg_air.set__gps_precision(gps_precision);
+      new_msg_air.set__device_id(device_id);
       new_msg_air.set__pm25(pm25);
       new_msg_air.set__pm10(pm10);
       new_msg_air.set__humidity(humidity);
@@ -128,7 +130,6 @@ void Pub::pub_timer_callback(void)
       air_quality_pub_->publish(new_msg_air);
 
       pub_cnt_++;
-      std::cout << std::endl;
       RCLCPP_INFO(this->get_logger(), "Published message %lu", pub_cnt_);
 
     }
@@ -149,7 +150,7 @@ int main(int argc, char ** argv)
   rclcpp::spin(pub_node);
 
   rclcpp::shutdown();
-  std::cout << "\nPublisher terminated" << std::endl;
+  std::cout << "Publisher terminated" << std::endl;
   exit(EXIT_SUCCESS);
 
 }
