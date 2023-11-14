@@ -13,7 +13,7 @@ Pub::Pub()
 {
 
   air_quality_pub_ = this->create_publisher<traxxas1_interfaces::msg::AirQuality>(
-    "/car1/air_quality_sensor", // TODO: update topic name
+    "/car1/air_quality_sensor",
     rclcpp::QoS(10));
 
   gps_pub_ = this->create_publisher<sensor_msgs::msg::NavSatFix>(
@@ -55,11 +55,10 @@ void Pub::pub_timer_callback(void)
     // Read from serial port
     
     asio::io_context io;
-    asio::serial_port port(io, "/dev/ttyACM0"); // TODO: add udev rule
+    asio::serial_port port(io, "/dev/ttyACM1"); // TODO: add udev rule
 
     asio::streambuf buf;
     asio::read_until(port, buf, '\n');
-
     std::istream stream(&buf);
 
     std::string received_data;
@@ -69,11 +68,15 @@ void Pub::pub_timer_callback(void)
     std::stringstream str_stream(received_data);
     std::string token;
     std::vector<std::string> str_vector;
+    bool none = false;
     while (std::getline(str_stream, token, ',')) {
       str_vector.push_back(token);
+      if (token == std::string(" None")){
+        none = true;
+      }
     }
-    
-    if(str_vector.size() == 14) {
+
+    if(str_vector.size() == 14 && !none) {
 
       // Save the acquired values into the appropriate variables
       device_id = std::stoi(str_vector[0]);
